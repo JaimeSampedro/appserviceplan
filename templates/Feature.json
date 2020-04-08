@@ -1,0 +1,185 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json",
+    "contentVersion": "1.0.0.0",
+    "parameters": {       
+        "appServicePlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service plan to use for hosting the web app."
+            }
+        },
+        "location": {
+            "type": "string",
+            "metadata": {
+                "description": "Set this to the same location as the Resource Group by default"           
+            }
+        },
+        "windowsAppServicePlanTier": {
+            "type": "string",
+            "allowedValues": [              
+              "Basic",
+              "Standard",
+              "Premium"
+            ],
+            "metadata": {
+              "description": "The Tier of the App Service Plan. 'Free' and 'Shared' are shared plans that run Apps in shared Virtual Machines, with Apps from other customers. 'Basic', 'Standard', 'Premium' and 'PremiumV2' run apps on dedicated VMs"
+            }
+        },
+        "windowsAppServicePlanSize": {
+            "type": "string",
+            "allowedValues": [
+              "1",
+              "2",
+              "3"
+            ],
+            "metadata": {
+              "description": " The Size of the VMs that run the Apps. The higher this number is, the better the hardware of the underlying VMs is"
+            }
+        },
+        "windowsAppServicePlanInstances": {
+            "metadata": {
+              "description": "The amount of instances that will run the App Services in the App Service Plan"
+            },
+            "type": "int",
+            "defaultValue": 1
+        },
+        "perSiteScaling": {
+          "type": "bool",
+          "metadata": {
+              "description": "Enable per-app scaling at the App Service plan level to allow for scaling an app independently from the App Service plan that hosts it."           
+          },
+          "defaultValue": false
+         },   
+         "maximumElasticWorkerCount": {
+          "metadata": {
+            "description": "maximum number of total workers allowed for this ElasticScaleEnabled App Service Plan"
+          },
+          "type": "int",
+          "defaultValue": 0
+          },
+          "isSpot": {
+            "type": "bool",
+            "metadata": {
+                "description": "this App Service Plan owns spot instances."           
+            },
+            "defaultValue": false
+           },   
+           "reserved": {
+            "type": "bool",
+            "metadata": {
+                "description": "sets if Linux app service plan."           
+            },
+            "defaultValue": false
+           }, 
+           "isXenon": {
+            "type": "bool",
+            "metadata": {
+                "description": "Sets If Hyper-V container app service plan is Xenon"           
+            },
+            "defaultValue": false
+           }, 
+           "hyperV": {
+            "type": "bool",
+            "metadata": {
+                "description": "Hyper-V container app service plan"           
+            },
+            "defaultValue": false
+           },          
+            "targetWorkerSizeId": {
+              "metadata": {
+                "description": "Sets scaling worker size ID."
+              },
+              "type": "int",
+              "defaultValue": 0
+            },
+            "targetWorkerCount": {
+              "metadata": {
+                "description": "Sets number of Workers."
+              },
+              "type": "int",
+              "defaultValue": 0
+            }
+    },
+    "variables": {
+        "appServicePlanSizes": {
+          "Free": {
+            "SizeName": {
+              "1": "F1",
+              "2": "F1",
+              "3": "F1"
+            },
+            "Family": "F"
+          },
+          "Shared": {
+            "SizeName": {
+              "1": "D1",
+              "2": "D1",
+              "3": "D1"
+            },
+            "Family": "D"
+          },
+          "Basic": {
+            "SizeName": {
+              "1": "B1",
+              "2": "B2",
+              "3": "B3"
+            },
+            "Family": "B"
+          },
+          "Standard": {
+            "SizeName": {
+              "1": "S1",
+              "2": "S2",
+              "3": "S3"
+            },
+            "Family": "S"
+          },
+          "Premium": {
+            "SizeName": {
+              "1": "P1",
+              "2": "P2",
+              "3": "P3"
+            },
+            "Family": "P"
+          },
+          "PremiumV2": {
+            "SizeName": {
+              "1": "P1v2",
+              "2": "P2v2",
+              "3": "P3v3"
+            },
+            "Family": "Pv2"
+          }
+        },
+        "appServicePlanSkuSize": "[variables('appServicePlanSizes')[parameters('WindowsAppServicePlanTier')].SizeName[parameters('WindowsAppServicePlanSize')]]",
+        "appServicePlanSkuFamily": "[variables('appServicePlanSizes')[parameters('WindowsAppServicePlanTier')].Family]",
+        "appServicePlanSkuName": "[variables('appServicePlanSkuSize')]"
+    },
+    "resources": [
+        {
+			      "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2018-02-01",
+			      "kind": "app", 
+            "name": "[parameters('appServicePlanName')]",            
+            "location": "[parameters('location')]",
+            "properties": {                   
+                "perSiteScaling": "[parameters('perSiteScaling')]",
+                "maximumElasticWorkerCount":"[parameters('maximumElasticWorkerCount')]",
+                "isSpot": "[parameters('isSpot')]",
+                "reserved": "[parameters('reserved')]",
+                "isXenon": "[parameters('isXenon')]",
+                "hyperV": "[parameters('hyperV')]",
+                "targetWorkerCount": "[parameters('targetWorkerCount')]",
+                "targetWorkerSizeId": "[parameters('targetWorkerSizeId')]" 
+            },
+            "sku": {
+                "name": "[variables('appServicePlanSkuName')]",
+                "capacity": "[parameters('windowsAppServicePlanInstances')]",
+                "tier": "[parameters('windowsAppServicePlanTier')]",
+                "size": "[variables('appServicePlanSkuSize')]",
+                "family": "[variables('appServicePlanSkuFamily')]"
+              }
+        }       
+    ]
+}
+

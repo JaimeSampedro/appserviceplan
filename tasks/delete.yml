@@ -1,0 +1,11 @@
+- name: Remove test App Service Plan
+  azure_rm_resource:
+    tenant: "{{ azure_appserviceplan_tenant }}"
+    client_id: "{{ azure_appserviceplan_client_id }}"
+    secret: "{{ azure_appserviceplan_secret }}"
+    subscription_id: "{{ azure_appserviceplan_subscriptionId }}"
+    method: DELETE
+    url:  https://management.azure.com/subscriptions/{{ azure_appserviceplan_subscriptionId }}/resourceGroups/{{ azure_appserviceplan_resourceGroupName }}/providers/Microsoft.Web/serverfarms/{{ azure_appserviceplan_appServicePlanName }}?api-version=2016-09-01
+    api_version: "2017-12-01"
+
+   

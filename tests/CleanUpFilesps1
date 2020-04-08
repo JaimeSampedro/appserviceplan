@@ -1,0 +1,4 @@
+$TARGETDIR = "tests/generatedfiles"
+if((Test-Path -Path $TARGETDIR )){
+    Remove-Item -LiteralPath $TARGETDIR -Force -Recurse
+}

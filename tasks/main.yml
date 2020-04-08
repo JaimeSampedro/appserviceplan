@@ -1,0 +1,7 @@
+- name: Create tasks
+  include_tasks: create.yml
+  when: azure_appserviceplan_action  == 'create'
+
+- name: Delete tasks
+  include_tasks: delete.yml
+  when: azure_appserviceplan_action  == 'delete'

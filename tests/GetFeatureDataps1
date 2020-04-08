@@ -1,0 +1,19 @@
+Write-Output "Comienzo de sctript"
+
+$subscriptionId = $args[0] 
+$resourceGroupName = $args[1] 
+$appserviceplanName = $args[2]
+
+$cred =  $env:PASSWORD | ConvertTo-SecureString -AsPlainText -Force
+Write-Output "Username clientId: $env:USERNAME"
+$Credential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $env:USERNAME, $cred #$clientId, $cred
+Add-AzAccount -ServicePrincipal -Tenant $env:AZURETENANTID -Credential $Credential
+
+Write-Output "workspace see $env:WORKSPACE"
+
+$context = Get-AzSubscription -SubscriptionId $subscriptionId  
+Set-AzContext $context
+
+Get-AzAppServicePlan -ResourceGroupName $resourceGroupName -name $appserviceplanName > $env:WORKSPACE/tests/generatedfiles/appserviceplan.json
+
+

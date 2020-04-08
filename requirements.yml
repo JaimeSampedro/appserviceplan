@@ -1,0 +1,5 @@
+- src: git+https://bitbk.roche.com/scm/cccfeat/ansible-role-azure_appserviceplan.git  
+  version: (branch)
+  name: azure_appserviceplan
+
+    

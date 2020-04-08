@@ -1,0 +1,59 @@
+- block:
+  - name: Create Web App and App Service Plan asociated to it
+    azure_rm_deployment:
+      deployment_name: "{{ azure_appserviceplan_siteName }}-Ansible-Arm"
+      state: present
+      deployment_mode: incremental
+      tenant: "{{ azure_appserviceplan_tenant }}"
+      client_id: "{{ azure_appserviceplan_client_id }}"
+      secret: "{{ azure_appserviceplan_secret }}"
+      subscription_id: "{{ azure_appserviceplan_subscriptionId }}"
+      location: "{{ azure_appserviceplan_location }}"
+      resource_group_name: "{{ azure_appserviceplan_resourceGroupName }}"
+      cert_validation_mode: ignore
+      parameters:
+        appServicePlanName:
+          value: "{{ azure_appserviceplan_appServicePlanName }}"
+        windowsAppServicePlanTier:
+          value: "{{ azure_appserviceplan_windowsAppServicePlanTier }}"
+        location:
+          value: "{{ azure_appserviceplan_location }}"
+        windowsAppServicePlanInstances: 
+          value: "{{ azure_appserviceplan_windowsAppServicePlanInstances }}"
+        windowsAppServicePlanSize: 
+          value: "{{ azure_appserviceplan_windowsAppServicePlanSize }}"
+        perSiteScaling: 
+          value: "{{ azure_appserviceplan_perSiteScaling }}"
+        maximumElasticWorkerCount: 
+          value: "{{ azure_appserviceplan_maximumElasticWorkerCount  }}"
+        isSpot: 
+          value: "{{ azure_appserviceplan_isSpot }}"
+        reserved:
+          value: "{{azure_appserviceplan_reserved }}"
+        isXenon:
+          value: "{{azure_appserviceplan_isXenon }}"
+        hyperV:
+         value: "{{azure_appserviceplan_hyperV }}"
+        targetWorkerSizeId:
+         value: "{{azure_appserviceplan_targetWorkerSizeId }}"
+        targetWorkerCount:
+         value: "{{azure_appserviceplan_targetWorkerCount }}"
+
+      template: "{{ lookup('file', '../templates/Feature.json') }}" 
+    
+
+ 
+  rescue: 
+        - name: Remove test App Service Plan
+          azure_rm_resource:
+            tenant: "{{ azure_appserviceplan_tenant }}"
+            client_id: "{{ azure_appserviceplan_client_id }}"
+            secret: "{{ azure_appserviceplan_secret }}"
+            subscription_id: "{{ azure_appserviceplan_subscriptionId }}"
+            method: DELETE
+            url:  https://management.azure.com/subscriptions/{{ azure_appserviceplan_subscriptionId }}/resourceGroups/{{ azure_appserviceplan_resourceGroupName }}/providers/Microsoft.Web/serverfarms/{{ azure_appserviceplan_appServicePlanName }}?api-version=2016-09-01
+            api_version: "2017-12-01"
+
+        
+
+        
